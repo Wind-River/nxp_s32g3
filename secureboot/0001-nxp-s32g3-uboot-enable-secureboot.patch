@@ -1,0 +1,86 @@
+diff --git a/arch/arm/mach-s32/s32-cc/Makefile b/arch/arm/mach-s32/s32-cc/Makefile
+index 5a37b94143..f1b129eee9 100644
+--- a/arch/arm/mach-s32/s32-cc/Makefile
++++ b/arch/arm/mach-s32/s32-cc/Makefile
+@@ -19,7 +19,7 @@ obj-$(CONFIG_OF_LIBFDT)		+= fdt.o
+ ccflags-y			+= -Idrivers/misc
+ ccflags-y			+= -Iboard/nxp/s32-cc
+ 
+-obj-$(CONFIG_HSE_SECBOOT)	+= hse_adv_secboot.o
++obj-$(CONFIG_NXP_HSE_SUPPORT)	+= hse_adv_secboot.o
+ obj-y				+= start_m7.o
+ ccflags-y			+= -I./board/nxp/s32-cc/
+ ccflags-y			+= -I./arch/arm/mach-s32/s32-cc/include
+diff --git a/arch/arm/mach-s32/s32-cc/hse_adv_secboot.c b/arch/arm/mach-s32/s32-cc/hse_adv_secboot.c
+index 18d8768ac3..48b93fa03d 100644
+--- a/arch/arm/mach-s32/s32-cc/hse_adv_secboot.c
++++ b/arch/arm/mach-s32/s32-cc/hse_adv_secboot.c
+@@ -227,7 +227,14 @@ int hse_install_cr_entry(struct hse_private *priv, u32 *recv_buf)
+ 	memset((void *)&priv->cr_entry, 0, sizeof(struct hse_cr_entry));
+ 	memset((void *)&priv->srv_desc, 0, sizeof(struct hse_srv_desc));
+ 
++#if defined(CONFIG_ARCH_S32G2)
+ 	priv->cr_entry.core_id = HSE_APP_CORE3;
++#elif defined(CONFIG_ARCH_S32G3)
++	priv->cr_entry.core_id = HSE_APP_CORE4;
++#else
++	priv->cr_entry.core_id = HSE_APP_CORE3;
++#endif
++	
+ 	priv->cr_entry.cr_sanction = HSE_CR_SANCTION_KEEP_CORE_IN_RESET;
+ 	priv->cr_entry.preboot_smr_map = HSE_SMR_ENTRY_1;
+ 	priv->cr_entry.pass_reset = priv->app_boot_hdr.ram_entry;
+diff --git a/arch/arm/mach-s32/s32-cc/s32cc.cfg b/arch/arm/mach-s32/s32-cc/s32cc.cfg
+index e2480db6da..4b0b8dc0c1 100644
+--- a/arch/arm/mach-s32/s32-cc/s32cc.cfg
++++ b/arch/arm/mach-s32/s32-cc/s32cc.cfg
+@@ -86,6 +86,15 @@ DCD WRITE 0x4 0x4009c2a4 0x21c000
+ DCD WRITE 0x1 0x4009d31a 0x1
+ #endif
+ 
++#ifdef CONFIG_TARGET_S32G399ARDB3
++/**
++ * Enable VDD_EFUSE, so that HSE can read SYS_IMG.
++ * VDD_EFUSE is disabled by default on s32g399ardb3
++ */
++DCD WRITE 0x4 0x4009c2a4 0x21c000
++DCD WRITE 0x1 0x4009d31a 0x1
++#endif
++
+ #if defined(CONFIG_ERR051257_WORKAROUND)
+ /**
+  * ERR051257 workaround.
+diff --git a/drivers/crypto/fsl/Makefile b/drivers/crypto/fsl/Makefile
+index 5563982ba4..fef46487b1 100644
+--- a/drivers/crypto/fsl/Makefile
++++ b/drivers/crypto/fsl/Makefile
+@@ -8,4 +8,4 @@ obj-$(CONFIG_FSL_CAAM) += jr.o fsl_hash.o jobdesc.o error.o
+ obj-$(CONFIG_CMD_BLOB) += fsl_blob.o
+ obj-$(CONFIG_CMD_DEKBLOB) += fsl_blob.o
+ obj-$(CONFIG_RSA_FREESCALE_EXP) += fsl_rsa.o
+-obj-$(CONFIG_HSE_SECBOOT) += hse/
++obj-$(CONFIG_NXP_HSE_SUPPORT) += hse/
+diff --git a/drivers/crypto/fsl/hse/Makefile b/drivers/crypto/fsl/hse/Makefile
+index 175a526c60..c2a84959bf 100644
+--- a/drivers/crypto/fsl/hse/Makefile
++++ b/drivers/crypto/fsl/hse/Makefile
+@@ -2,4 +2,4 @@
+ #
+ # Copyright 2020 NXP
+ 
+-obj-$(CONFIG_HSE_SECBOOT) += hse_mu.o hse_mmc.o
++obj-$(CONFIG_NXP_HSE_SUPPORT) += hse_mu.o hse_mmc.o
+diff --git a/include/hse/hse_abi.h b/include/hse/hse_abi.h
+index 1233e4b859..de5ed212de 100644
+--- a/include/hse/hse_abi.h
++++ b/include/hse/hse_abi.h
+@@ -51,7 +51,8 @@
+ 
+ #define HSE_ACCESS_MODE_ONE_PASS 0u
+ 
+-#define HSE_APP_CORE3 3u /* A53_0 */
++#define HSE_APP_CORE3 3u /* A53_0 of S32G2 SoC */
++#define HSE_APP_CORE4 4u /* A53_0 of S32G3 SoC */
+ 
+ #define HSE_PUBLISH_UPDATED_DATA_SET BIT(0)
+ #define HSE_PUBLISH_ALL_DATA_SETS    BIT(1)

@@ -2,16 +2,6 @@
 
 This repository contains arm-trusted-firmware and U-Boot image, source code and patches for S32G-VNP-RDB3 board.
 
-## fip.s32-sdcard
-
-The file `fip.s32-sdcard` is a disk image.
-dd command can be used for low-level copying the data of this file to the SD card device as below:
-
-```
-$ sudo dd if=./fip.s32-sdcard of=/dev/sdb conv=notrunc,fsync seek=512 skip=512 oflag=seek_bytes iflag=skip_bytes && sync
-```
-NOTE: This command assumes the SD card drive name is /dev/sdb.
-
 ## arm-trusted-firmware-nxp_s32g3.tar.gz
 
 The file arm-trusted-firmware-nxp_s32g3.tar.gz is the arm-trusted-firmware source code.

@@ -44,3 +44,7 @@ $ bitbake arm-trusted-firmware
 NOTE: <Patch Folder> is the location where to save the patch file
 
 The built image `fip.s32-sdcard` can be found in `build_s32g399ardb3/tmp/deploy/images/s32g399ardb3`.
+
+**Legal Notices**
+All product names, logos, and brands are property of their respective owners. All company, product and service names used in this software are for identification purposes only. Wind River and VxWorks are registered trademarks of Wind River Systems, Inc. UNIX is a registered trademark of The Open Group.
+Disclaimer of Warranty / No Support: Wind River does not provide support and maintenance services for this software, under Wind River’s standard Software Support and Maintenance Agreement or otherwise. Unless required by applicable law, Wind River provides the software (and each contributor provides its contribution) on an “AS IS” BASIS, WITHOUT WARRANTIES OF ANY KIND, either express or implied, including, without limitation, any warranties of TITLE, NONINFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A PARTICULAR PURPOSE. You are solely responsible for determining the appropriateness of using or redistributing the software and assume any risks associated with your exercise of permissions under the license.
